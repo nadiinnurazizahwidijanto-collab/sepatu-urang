@@ -1,0 +1,89 @@
+<?php $__env->startSection('content'); ?>
+<div class="container py-5" style="margin-top: 50px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold" style="font-family: 'Bodoni Moda', serif;">👟 Kelola Katalog Sepatu</h2>
+        <button type="button" class="btn btn-dark rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#tambahModal">
+            <i class="fa-solid fa-plus me-2"></i>Tambah Produk
+        </button>
+    </div>
+
+    <?php if(session('success')): ?>
+        <div class="alert alert-success border-0 shadow-sm rounded-3"><?php echo e(session('success')); ?></div>
+    <?php endif; ?>
+
+    <div class="row">
+        <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $p): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                <img src="<?php echo e(asset('img/'.$p->image_path)); ?>" class="card-img-top" style="height: 200px; object-fit: cover;">
+                <div class="card-body text-center">
+                    <h6 class="fw-bold mb-1"><?php echo e($p->name); ?></h6>
+                    <p class="text-success fw-bold small mb-3">Rp<?php echo e(number_format($p->price, 0, ',', '.')); ?></p>
+                    <p class="small text-muted mb-2">Kategori:
+                        <?php if($p->category_id == 1): ?> Men
+                        <?php elseif($p->category_id == 2): ?> Women
+                        <?php elseif($p->category_id == 3): ?> Kids
+                        <?php else: ?> Lainnya
+                        <?php endif; ?>
+                    </p>
+
+                    <form action="<?php echo e(route('admin.deleteProduct', $p->id)); ?>" method="POST">
+                        <?php echo csrf_field(); ?>
+                        <?php echo method_field('DELETE'); ?>
+                        <button type="submit" class="btn btn-sm btn-outline-danger w-100 rounded-pill" onclick="return confirm('Hapus produk ini?')">
+                            <i class="fa-solid fa-trash-can me-1"></i> Hapus
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    </div>
+</div>
+
+<div class="modal fade" id="tambahModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <form action="<?php echo e(route('admin.storeProduct')); ?>" method="POST" enctype="multipart/form-data" class="modal-content border-0 shadow">
+            <?php echo csrf_field(); ?>
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">Tambah Produk Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Nama Sepatu</label>
+                    <input type="text" name="name" class="form-control" placeholder="Contoh: Nike Air Jordan" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Harga (Angka Saja)</label>
+                    <input type="number" name="price" class="form-control" placeholder="Contoh: 1500000" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Kategori</label>
+                    <select name="category_id" class="form-control" required>
+                        <option value="">-- Pilih Kategori --</option>
+                        <option value="1">Men</option>
+                        <option value="2">Women</option>
+                        <option value="3">Kids</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Deskripsi Produk</label>
+                    <textarea name="description" class="form-control" placeholder="Deskripsikan sepatu ini..." required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Foto Produk</label>
+                    <input type="file" name="image" class="form-control" accept="image/*" required>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-dark px-4">Simpan Ke Katalog</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.user', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\sepatuku\resources\views/admin/products.blade.php ENDPATH**/ ?>
